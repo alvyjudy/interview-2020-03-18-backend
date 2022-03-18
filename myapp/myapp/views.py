@@ -2,7 +2,7 @@ import json
 import csv
 from io import StringIO
 import os
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .algorithm import generate_plans, score_plan
@@ -24,7 +24,20 @@ def index(request):
 
     with open(f'{plans}/plan_1.json') as file:
         plan1 = json.load(file)
+    
+    best_plan = plan1
     score = score_plan(plan1)
-    print(score)
-    return HttpResponse('hello')
+
+    return JsonResponse({
+        "best_plan": best_plan,
+        "score": score,
+        "server_a_summary": {
+            "total_cpu": '',
+            "total_ram": "",
+            "total_disk_usage": "",
+        },
+        "server_b_summary": {
+
+        }
+    })
 
