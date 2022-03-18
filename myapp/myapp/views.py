@@ -1,9 +1,10 @@
+import time
 import re
 import json
 import csv
 from io import StringIO
 import os
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .algorithm import generate_plans, score_plan
@@ -11,16 +12,24 @@ from .algorithm import generate_plans, score_plan
 
 @csrf_exempt
 def index(request):
-    os.makedirs('./vmspecs', exist_ok=True)
-    filepath = './vmspecs/input.json'
+    if request.method != 'POST':
+        return HttpResponse(status=401, content="Please send a POST request")
 
-    plansText = request.body.decode('utf-8')
-    textIO = StringIO(plansText)
-    specs = csv.DictReader(textIO)
-    with open(filepath, 'w') as f:
-        json.dump(list(specs), f, indent=2)
-    
-    plans = generate_plans(filepath)
+    os.makedirs('./vmspecs', exist_ok=True)
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    filepath = f'./vmspecs/input-{timestamp}.json'
+
+    try:
+        plansText = request.body.decode('utf-8')
+        textIO = StringIO(plansText)
+        specs = csv.DictReader(textIO)
+        with open(filepath, 'w') as f:
+            json.dump(list(specs), f, indent=2)
+        
+        plans = generate_plans(filepath)
+    except:
+        return HttpResponse(status=400, content='Your text input is invalid')
+
 
     best_plan = None
     highest_score = 0
