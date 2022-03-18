@@ -58,7 +58,7 @@ def generate_plans(vm_spec_path):
         specs_to_serverB = plan[split_idx:]
         plan = {'serverA': specs_to_serverA, 'serverB': specs_to_serverB}
         plan_path = os.path.join(plan_folder, 'plan_{}.json'.format(idx))
-        print('plan_path', plan_path)
+
         with open(plan_path, 'w') as plan_file:
             json.dump(plan, plan_file)
 

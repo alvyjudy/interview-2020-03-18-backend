@@ -5,7 +5,7 @@ import os
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .algorithm import generate_plans
+from .algorithm import generate_plans, score_plan
 
 
 @csrf_exempt
@@ -21,5 +21,10 @@ def index(request):
     
     plans = generate_plans(filepath)
     print(plans)
+
+    with open(f'{plans}/plan_1.json') as file:
+        plan1 = json.load(file)
+    score = score_plan(plan1)
+    print(score)
     return HttpResponse('hello')
 
